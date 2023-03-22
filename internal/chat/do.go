@@ -144,13 +144,9 @@ func stream(ctx context.Context, client *openai.Client, req openai.ChatCompletio
 	}
 	defer stream.Close()
 
-	var success bool
 	for {
 		response, respError := stream.Recv()
 		if errors.Is(respError, io.EOF) {
-			if !success {
-				fmt.Println("Found EOF error, check response body by hand.")
-			}
 			close(respChan)
 			close(errChan)
 			return
@@ -163,7 +159,6 @@ func stream(ctx context.Context, client *openai.Client, req openai.ChatCompletio
 			return
 		}
 
-		success = true
 		respChan <- response
 	}
 }
